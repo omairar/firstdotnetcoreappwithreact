@@ -28,10 +28,10 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Story>>> GetStories()
         {
-          if (_context.Stories == null)
-          {
-              return NotFound();
-          }
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
             return await _context.Stories.ToListAsync();
         }
 
@@ -39,10 +39,10 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Story>> GetStory(int id)
         {
-          if (_context.Stories == null)
-          {
-              return NotFound();
-          }
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
             var story = await _context.Stories.FindAsync(id);
 
             if (story == null)
@@ -52,16 +52,16 @@ namespace WebAPI.Controllers
 
             return story;
         }
-        
-        
+
+
         // GET: api/Stories/5
         [HttpGet("getStoriesByUserID/{id}")]
         public async Task<ActionResult<Story>> GetStoriesByUserID(string id)
         {
-          if (_context.Stories == null)
-          {
-              return NotFound();
-          }
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
             var story = await _context.Stories.Where(x => x.Id == id).ToListAsync();
 
             if (story == null)
@@ -71,21 +71,21 @@ namespace WebAPI.Controllers
 
             return Ok(story);
         }
-        
-        
+
+
         // GET: api/getStoriesByStatus/true
         [HttpGet("getStoriesByStatus/{isApproved}")]
 
         [AllowAnonymous]
         public async Task<IActionResult> GetStoriesByStatus(bool isApproved)
         {
-          if (_context.Stories == null)
-          {
-              return NotFound();
-          }
-            var stories = await _context.Stories.Where(x=>x.IsApproved == isApproved).ToListAsync();
+            if (_context.Stories == null)
+            {
+                return NotFound();
+            }
+            var stories = await _context.Stories.Where(x => x.IsApproved == isApproved).ToListAsync();
 
-           
+
 
             return Ok(stories);
         }
@@ -101,13 +101,13 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            
+
 
             try
             {
                 var stry = await _context.Stories.Where(x => x.SSid == id).AsNoTracking().FirstOrDefaultAsync();
 
-                if(stry != null)
+                if (stry != null)
                 {
                     stry.IsApproved = true;
                     _context.Stories.Update(stry);
@@ -169,11 +169,11 @@ namespace WebAPI.Controllers
             try
             {
                 if (_context.Stories == null)
-                  {
-                      return Problem("Entity set 'SSDBContext.Stories'  is null.");
+                {
+                    return Problem("Entity set 'SSDBContext.Stories'  is null.");
                 }
 
-                if(ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     story.Id = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
                     story.CreatedOn = DateTime.Now;
@@ -190,17 +190,18 @@ namespace WebAPI.Controllers
                     return BadRequest(ModelState);
                 }
 
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                var msg = (e.InnerException != null) ? (e.InnerException.Message): (e.Message);
+                var msg = (e.InnerException != null) ? (e.InnerException.Message) : (e.Message);
 
                 return StatusCode(500, "Admin is working on it " + msg);
             }
-          
-           
-           
 
-           
+
+
+
+
         }
 
 

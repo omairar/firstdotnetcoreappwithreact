@@ -22,7 +22,7 @@ builder.Services.AddIdentity<SSUser, IdentityRole>()
 builder.Services.ConfigureApplicationCookie(opt =>
 {
 
-   // opt.ExpireTimeSpan = new TimeSpan(0, 30, 0); // (H, M, S)
+    // opt.ExpireTimeSpan = new TimeSpan(0, 30, 0); // (H, M, S)
     opt.Events = new CookieAuthenticationEvents()
     {
         //authentications
@@ -41,7 +41,8 @@ builder.Services.ConfigureApplicationCookie(opt =>
     };
 });
 
-builder.Services.ConfigureApplicationCookie(options => {
+builder.Services.ConfigureApplicationCookie(options =>
+{
     options.Cookie.SameSite = SameSiteMode.None;
 });
 

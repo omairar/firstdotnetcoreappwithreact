@@ -7,11 +7,11 @@ namespace DAL
     // Step 1. Add Project Reference
 
     // Step 2: Install EF Core Package
-             //Microsoft.EntityFrameworkCore.SqlServer
-             //Microsoft.EntityFrameworkCore.Tools
-             //Microsoft.AspNetCore.Identity.EntityFrameworkCore
+    //Microsoft.EntityFrameworkCore.SqlServer
+    //Microsoft.EntityFrameworkCore.Tools
+    //Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
-    public class SSDBContext: IdentityDbContext
+    public class SSDBContext : IdentityDbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
