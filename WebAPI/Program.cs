@@ -1,5 +1,6 @@
 using BOL;
 using DAL;
+using DAL.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,9 @@ builder.Services.AddDbContext<SSDBContext>(
 builder.Services.AddIdentity<SSUser, IdentityRole>()
                 .AddEntityFrameworkStores<SSDBContext>()
                 .AddDefaultTokenProviders();
+
+
+builder.Services.AddTransient<IStoryDB, StoryDB>();
 
 //step 3 validating Token
 //Step-3.1: Create signingKey from Secretkey

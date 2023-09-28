@@ -10,6 +10,7 @@ using DAL;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DAL.Interfaces;
 
 namespace WebAPI.Controllers
 {
@@ -18,40 +19,36 @@ namespace WebAPI.Controllers
     [ApiController]
     public class StoriesController : ControllerBase
     {
-        private readonly SSDBContext _context;
+      
 
-        public StoriesController(SSDBContext context)
+        IStoryDB _storyDB;
+
+        public StoriesController( IStoryDB storyDB)
         {
-            _context = context;
+          
+            _storyDB = storyDB;
         }
 
         // GET: api/Stories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Story>>> GetStories()
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            return await _context.Stories.ToListAsync();
+            return await _storyDB.GetAll().ToListAsync();
         }
 
         // GET: api/Stories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Story>> GetStory(int id)
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            var story = await _context.Stories.FindAsync(id);
+            
+            var story = await _storyDB.GetById(id).FirstOrDefaultAsync();
 
             if (story == null)
             {
                 return NotFound();
             }
 
-            return story;
+            return Ok(story);
         }
 
 
@@ -59,11 +56,7 @@ namespace WebAPI.Controllers
         [HttpGet("getStoriesByUserID/{id}")]
         public async Task<ActionResult<Story>> GetStoriesByUserID(string id)
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            var story = await _context.Stories.Where(x => x.Id == id).ToListAsync();
+            var story = await _storyDB.GetByUserId(id).ToListAsync();
 
             if (story == null)
             {
@@ -80,14 +73,8 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetStoriesByStatus(bool isApproved)
         {
-            if (_context.Stories == null)
-            {
-                return NotFound();
-            }
-            var stories = await _context.Stories.Where(x => x.IsApproved == isApproved).ToListAsync();
-
-
-
+           
+            var stories = await _storyDB.GetStoriesByStatus(isApproved).ToListAsync();
             return Ok(stories);
         }
 
@@ -106,26 +93,30 @@ namespace WebAPI.Controllers
 
             try
             {
-                var stry = await _context.Stories.Where(x => x.SSid == id).AsNoTracking().FirstOrDefaultAsync();
+                var stry = await _storyDB.GetById(id).AsNoTracking().FirstOrDefaultAsync();
 
                 if (stry != null)
                 {
                     stry.IsApproved = true;
-                    _context.Stories.Update(stry);
-                    await _context.SaveChangesAsync();
-                    return NoContent();
+
+                    var pro = await _storyDB.Approve(stry);
+
+                    if (pro)
+                    {
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                   
+                    
                 }
             }
             catch (Exception E)
             {
-                if (!StoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                 return BadRequest();
+               
             }
 
             return NoContent();
@@ -133,35 +124,7 @@ namespace WebAPI.Controllers
 
 
 
-        // PUT: api/Stories/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutStory(int id, Story story)
-        {
-            if (id != story.SSid)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(story).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+      
 
         // POST: api/Stories
         [HttpPost]
@@ -169,10 +132,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                if (_context.Stories == null)
-                {
-                    return Problem("Entity set 'SSDBContext.Stories'  is null.");
-                }
+                
 
                 if (ModelState.IsValid)
                 {
@@ -180,9 +140,9 @@ namespace WebAPI.Controllers
                     story.CreatedOn = DateTime.Now;
                     story.IsApproved = false;
 
-                    _context.Stories.Add(story);
+                    _storyDB.Create(story);
 
-                    await _context.SaveChangesAsync();
+                  
 
                     return CreatedAtAction("GetStory", new { id = story.SSid }, story);
                 }
@@ -211,25 +171,22 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStory(int id)
         {
-            if (_context.Stories == null)
+            
+
+            var story = await _storyDB.Delete(id);
+            if (story)
+            {
+                return NoContent();
+            }
+            else
             {
                 return NotFound();
             }
-            var story = await _context.Stories.FindAsync(id);
-            if (story == null)
-            {
-                return NotFound();
-            }
-
-            _context.Stories.Remove(story);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool StoryExists(int id)
-        {
-            return (_context.Stories?.Any(e => e.SSid == id)).GetValueOrDefault();
-        }
+        //private bool StoryExists(int id)
+        //{
+        //    return (_context.Stories?.Any(e => e.SSid == id)).GetValueOrDefault();
+        //}
     }
 }
