@@ -15,6 +15,7 @@ import { addUserFromLocal } from "../redux/userSlice";
 import PrivateRoute from "./PrivateRoute";
 import SuperAdminRoute from "./SuperAdminRoute";
 import MyStories from "../pages/MyStories";
+import Category from "../pages/Category";
 
 // import PrivateRoute from "./PrivateRoute";
 
@@ -57,6 +58,11 @@ function Router() {
                 exact
                 path="/approvestories"
                 element={<SuperAdminRoute><ApproveStories /></SuperAdminRoute>}
+              />
+              <Route
+                exact
+                path="/category"
+                element={<SuperAdminRoute><Category /></SuperAdminRoute>}
               />
             </Routes>
           </div>

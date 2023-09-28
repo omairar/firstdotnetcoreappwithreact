@@ -45,9 +45,15 @@ function Header() {
                 Add Story
               </Link>
               {userObj.role === "Admin" && (
-                <Link className="nav-link" to="/approvestories">
+                <>
+                  <Link className="nav-link" to="/approvestories">
                   Approve Story
                 </Link>
+                <Link className="nav-link" to="/category">
+                Categories
+                </Link>
+                </>
+                
               )}
               <Link className="nav-link" to='/mystory'>
                 My Stories

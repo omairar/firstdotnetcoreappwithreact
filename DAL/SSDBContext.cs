@@ -20,5 +20,6 @@ namespace DAL
         }
 
         public DbSet<Story>? Stories { get; set; }
+        public DbSet<Category>? Categories { get; set; }
     }
 }
