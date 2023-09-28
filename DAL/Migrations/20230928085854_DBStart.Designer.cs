@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(SSDBContext))]
-    [Migration("20230925144925_InitialDb")]
-    partial class InitialDb
+    [Migration("20230928085854_DBStart")]
+    partial class DBStart
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,26 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("BOL.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Category");
+                });
+
             modelBuilder.Entity("BOL.Story", b =>
                 {
                     b.Property<int>("SSid")
@@ -31,6 +51,9 @@ namespace DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SSid"), 1L, 1);
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -56,6 +79,8 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SSid");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("Id");
 
@@ -275,9 +300,15 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("BOL.Story", b =>
                 {
+                    b.HasOne("BOL.Category", "CategoryNav")
+                        .WithMany("Stories")
+                        .HasForeignKey("CategoryId");
+
                     b.HasOne("BOL.SSUser", "UserNav")
                         .WithMany("Stories")
                         .HasForeignKey("Id");
+
+                    b.Navigation("CategoryNav");
 
                     b.Navigation("UserNav");
                 });
@@ -340,6 +371,11 @@ namespace DAL.Migrations
                         .HasForeignKey("BOL.SSUser", "Id")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BOL.Category", b =>
+                {
+                    b.Navigation("Stories");
                 });
 
             modelBuilder.Entity("BOL.SSUser", b =>

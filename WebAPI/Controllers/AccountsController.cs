@@ -17,13 +17,15 @@ namespace WebAPI.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+        IConfiguration configuration;
         SignInManager<SSUser> signInManager;
         UserManager<SSUser> userManager;
 
-        public AccountsController(SignInManager<SSUser> _signInManager, UserManager<SSUser> _userManager)
+        public AccountsController(SignInManager<SSUser> _signInManager, UserManager<SSUser> _userManager, IConfiguration _configuration)
         {
             signInManager = _signInManager;
             userManager = _userManager;
+            configuration = _configuration;
         }
 
         [HttpPost("logout")]
@@ -64,7 +66,7 @@ namespace WebAPI.Controllers
                         };
 
                         //Step - 2: Create signingKey from Secretkey
-                        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("This is the JWT Security Token Authentication"));
+                        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("SS:JWTKey").Value));
 
                         //Step -3: Create signingCredentials from signingKey with HMAC algorithm
                         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

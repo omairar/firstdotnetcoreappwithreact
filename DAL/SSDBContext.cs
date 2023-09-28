@@ -13,11 +13,15 @@ namespace DAL
 
     public class SSDBContext : IdentityDbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public SSDBContext(DbContextOptions<SSDBContext> options) : base(options)
         {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlServer("Server=T480S;Database=SSDB;Trusted_Connection=true;");
+            Database.Migrate();
         }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    base.OnConfiguring(optionsBuilder);
+        //optionsBuilder.UseSqlServer(@"Server=DESKTOP-MSQQ9TJ\SQLEXPRESS01;Database=SSDb_8;Trusted_Connection=True;");
+        //}
 
         public DbSet<Story>? Stories { get; set; }
         public DbSet<Category>? Categories { get; set; }
