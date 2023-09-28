@@ -21,13 +21,30 @@ function Register() {
   };
 
   const register = () => {
-    registerAPI(registerState)
+    const formData = new FormData();
+    
+    //add Profile Pic TO Form
+    formData.append('PP', selectedFile);
+
+    //add Profile Pic TO Form
+    formData.append('myModel', JSON.stringify(registerState));
+
+
+    registerAPI(formData)
       .then((res) => {
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (event) => {
+
+    const file = event.target.files[0];
+    setSelectedFile(file);
   };
 
   return (
@@ -89,6 +106,9 @@ function Register() {
           id="floatingDOB"
         />
         <label htmlFor="floatingDOB">DOB</label>
+      </div>
+      <div>
+        <input type="file" onChange={handleFileChange}/>
       </div>
       <button onClick={() => register()} className="w-100 btn btn-lg">
         Register

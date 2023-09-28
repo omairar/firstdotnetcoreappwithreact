@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -96,12 +97,15 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost("register")]
+        [HttpPost("register"), DisableRequestSizeLimit]
 
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register()
         {
             try
             {
+
+                RegisterViewModel model = JsonConvert.DeserializeObject<RegisterViewModel>(Request.Form["myModel"].ToString());
+
                 if (ModelState.IsValid)
                 {
                     var user = new SSUser()
@@ -119,6 +123,16 @@ namespace WebAPI.Controllers
 
                         if (roleResult.Succeeded)
                         {
+                            if(Request.Form.Files.Count > 0)
+                            {
+                                var filePath = Path.GetFullPath("~/ProfilePics/"+ user.Id+".jpeg").Replace("~\\","");
+
+                                using (var stream = new FileStream(filePath, FileMode.Create))
+                                {
+                                    Request.Form.Files[0].CopyTo(stream);
+
+                                }
+                            }
                             return Ok(user);
 
                         }

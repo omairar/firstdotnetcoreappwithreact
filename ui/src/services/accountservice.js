@@ -1,9 +1,7 @@
 import axios from "axios";
 
-export const registerAPI = async (obj) => {
-  const promise = axios.post(`accounts/register/`, {
-    ...obj,
-  });
+export const registerAPI = async (formData) => {
+  const promise = axios.post(`accounts/register/`, formData);
 
   const dataPromise = await promise;
 
