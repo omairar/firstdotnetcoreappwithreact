@@ -11,8 +11,7 @@ export const setupInterceptors = (navigate, dispatch) => {
   axios.defaults.baseURL = `${process.env.REACT_APP_API}api/`;
   //axios.defaults.headers.common["Accept-Language"] =getLocalData("en");
   //axios.defaults.headers.common["DateTimeOffset"] = moment().utcOffset();
-  axios.defaults.withCredentials = true;
-
+  
   axios.interceptors.request.use(
     (request) => {
       return request;

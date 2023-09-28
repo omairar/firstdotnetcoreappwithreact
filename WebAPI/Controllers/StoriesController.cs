@@ -9,10 +9,11 @@ using BOL;
 using DAL;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebAPI.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] //applying JWT 
     [Route("api/[controller]")]
     [ApiController]
     public class StoriesController : ControllerBase
@@ -92,7 +93,7 @@ namespace WebAPI.Controllers
 
 
         // Put: api/approveStory/5
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles = "Admin")]
         [HttpPut("approveStory/{id}")]
         public async Task<IActionResult> ApproveStory(int id, Story story)
         {

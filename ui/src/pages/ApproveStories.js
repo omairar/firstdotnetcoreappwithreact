@@ -19,9 +19,10 @@ function ApproveStories() {
         console.log(err);
       });
   }, []);
+  const userObj = useSelector((state) => state.user.userObj);
 
   const approveStory = (id, obj) => {
-    approveStoryAPI(id, obj)
+    approveStoryAPI(id, obj , userObj.tokenJwt)
       .then((res) => {
         console.log(res);
         getStoriesByStatusAPI(false)
@@ -37,7 +38,7 @@ function ApproveStories() {
       });
   };
 
-  const userObj = useSelector((state) => state.user.userObj);
+
 
 
   return (

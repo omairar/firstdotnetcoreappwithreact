@@ -10,7 +10,7 @@ function MyStories() {
   const [storiesArr, setStoriesArr] = useState([]);
   const userObj = useSelector((state) => state.user.userObj);
   useEffect(() => {
-    getStoriesByIDAPI(userObj.id)
+    getStoriesByIDAPI(userObj.id, userObj.tokenJwt)
       .then((res) => {
         setStoriesArr(res);
       })

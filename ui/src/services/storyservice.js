@@ -1,8 +1,10 @@
 import axios from "axios";
 
-export const SavePost = async (obj) => {
+export const SavePost = async (obj,token) => {
   const promise = axios.post(`Stories/`, {
     ...obj,
+  },{
+    headers: { Authorization: `Bearer  ${token}` },
   });
 
   const dataPromise = await promise;
@@ -19,8 +21,11 @@ export const getStoriesByStatusAPI = async (flag) => {
 };
 
 
-export const getStoriesByIDAPI = async (id) => {
-  const promise = axios.get(`Stories/getStoriesByUserID/${id}`);
+export const getStoriesByIDAPI = async (id,token) => {
+  const promise = axios.get(`Stories/getStoriesByUserID/${id}`,
+  {
+    headers: { Authorization: `Bearer  ${token}` },
+  });
 
   const dataPromise = await promise;
 
@@ -32,11 +37,11 @@ export const getStoriesByIDAPI = async (id) => {
 
 
 
-export const approveStoryAPI = async (id,obj) => {
+export const approveStoryAPI = async (id,obj,token) => {
   const promise = axios.put(`Stories/approveStory/${id}`, {
     ...obj
   } ,{
-    withCredentials: true,
+    headers: { Authorization: `Bearer  ${token}` },
   });
 
   const dataPromise = await promise;

@@ -1,8 +1,11 @@
 using BOL;
 using DAL;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //Step 1: DAL And BOL 
@@ -18,32 +21,29 @@ builder.Services.AddIdentity<SSUser, IdentityRole>()
                 .AddEntityFrameworkStores<SSDBContext>()
                 .AddDefaultTokenProviders();
 
-//configuring cookies
-builder.Services.ConfigureApplicationCookie(opt =>
+//step 3 validating Token
+//Step-3.1: Create signingKey from Secretkey
+var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("This is the JWT Security Token Authentication"));
+
+//Step-3.2:Create Validation Parameters using signingKey
+var tokenValidationParameters = new TokenValidationParameters()
 {
+    IssuerSigningKey = signingKey,
+    ValidateIssuer = false,
+    ValidateAudience = false,
+    ClockSkew = TimeSpan.Zero
+};
 
-    // opt.ExpireTimeSpan = new TimeSpan(0, 30, 0); // (H, M, S)
-    opt.Events = new CookieAuthenticationEvents()
-    {
-        //authentications
-        OnRedirectToLogin = redirectContext =>
-        {
-            redirectContext.HttpContext.Response.StatusCode = 403;
-            return Task.CompletedTask;
-        },
-
-        //authorization
-        OnRedirectToAccessDenied = redirectContext =>
-        {
-            redirectContext.HttpContext.Response.StatusCode = 401;
-            return Task.CompletedTask;
-        }
-    };
-});
-
-builder.Services.ConfigureApplicationCookie(options =>
+//Step-3.3: Install Microsoft.AspNetCore.Authentication.JwtBearer
+//Step-3.4: Set Authentication Type as JwtBearer
+builder.Services.AddAuthentication(auth =>
 {
-    options.Cookie.SameSite = SameSiteMode.None;
+    auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+//Step-4: Set Validation Parameter created above
+.AddJwtBearer(jwt =>
+{
+    jwt.TokenValidationParameters = tokenValidationParameters;
 });
 
 

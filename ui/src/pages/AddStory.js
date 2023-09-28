@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { SavePost } from "../services/storyservice";
+import { useSelector } from "react-redux";
 
 function AddStory() {
   const [compState, setCompState] = useState({
@@ -7,8 +8,9 @@ function AddStory() {
     SSDescription: "",
   });
 
+  const userObj = useSelector((state) => state.user.userObj);
   const onSave = () => {
-    SavePost(compState)
+    SavePost(compState, userObj.tokenJwt)
       .then((res) => {
         alert("post created");
       })
